@@ -19,6 +19,43 @@
 
 #include "habsup.h"
 
+#include <sys/types.h>
+#include <dirent.h>
+#include <wordexp.h>
+
+// Habsup functions start with habsup_, utilities start with hab_
+
+char* hab_canon_shellpath(char* str){
+    wordexp_t exp_result;
+    wordexp(str, &exp_result, 0);
+    char* r = strdup(exp_result.we_wordv[0]);
+    wordfree(&exp_result);
+    return r;
+}
+
 char* habsup_find_cfg(){
+    char* pathFromEnv = getenv(HABSUP_CONFIG_ENV);
+    if(pathFromEnv){
+        return strdup(pathFromEnv);
+    }
+    char* homePath = hab_canon_shellpath("~/.habsup");
+    if(homePath){
+        DIR* dir = opendir(homePath);
+        if(dir){
+            closedir(dir);
+            return homePath;
+        }
+        free(homePath);
+    }
+    homePath = hab_canon_shellpath("~/.local/habsup");
+    if(homePath){
+        DIR* dir = opendir(homePath);
+        if(dir){
+            closedir(dir);
+            return homePath;
+        }
+        free(homePath);
+    }
+
     return NULL;
 }
