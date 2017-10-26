@@ -23,7 +23,7 @@
 
 int main(int argc, char* argv[]){
     char* configDir = NULL;
-    
+
     static struct option long_opts[] = {
         {"version", no_argument, 0, 'v'},
         {"help", no_argument, 0, 'h'},
@@ -96,9 +96,11 @@ int main(int argc, char* argv[]){
         configDir = habsup_find_cfg();
         if(!configDir){
             fputs("Failed to find configuration directory.\n", stderr);
+            exit(EXIT_FAILURE);
         }
     }
-    
-    
-    return 0;
+
+
+
+    return EXIT_SUCCESS;
 }
